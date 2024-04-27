@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Query</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="{{ url_for('static', filename='ds_logo.png') }}" alt="Logo" style="width: 100px;">
+            <h1>DS Market</h1>
+            <h2>Consultador online</h2>
+        </header>
+        <form id="queryForm">
+            <label for="query">Ingresa tu consulta:</label><br>
+            <input type="text" id="query" name="query"><br><br>
+            <input type="submit" value="Submit">
+        </form>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        document.getElementById("queryForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var query = document.getElementById("query").value;
+            fetch('/query?query=' + encodeURIComponent(query))
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("response").innerText = data.response;
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
