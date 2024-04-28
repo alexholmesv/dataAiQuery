@@ -8,7 +8,7 @@ app = Flask(__name__)
 data = pd.read_csv('test.csv')
 
 # OpenAI API key
-openai.api_key = 'XXXXX'
+openai.api_key = None
 
 def generate_response(query):
     response = openai.Completion.create(
@@ -32,6 +32,12 @@ def query_data():
         return jsonify({'response': response})
     else:
         return jsonify({'error': 'No query provided'})
+
+@app.route('/save-api-key', methods=['POST'])
+def save_api_key():
+    data = request.json
+    openai.api_key = data.get('apiKey')
+    return jsonify({'message': 'API key saved successfully'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

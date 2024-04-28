@@ -13,6 +13,13 @@
             <h1>DS Market</h1>
             <h2>Consultador online</h2>
         </header>
+        <h1>API key</h1>
+        <form id="apiKeyForm">
+            <label for="apiKey">Ingresa la API key de ChatGPT:</label><br>
+            <input type="text" id="apiKey" name="apiKey"><br><br>
+            <input type="submit" value="Save API Key">
+        </form>
+        <p id="message" style="display: none; color: green;"></p>
         <form id="queryForm">
             <label for="query">Ingresa tu consulta:</label><br>
             <input type="text" id="query" name="query"><br><br>
@@ -22,15 +29,23 @@
     </div>
 
     <script>
-        document.getElementById("queryForm").addEventListener("submit", function(event) {
+        document.getElementById("apiKeyForm").addEventListener("submit", function(event) {
             event.preventDefault();
-            var query = document.getElementById("query").value;
-            fetch('/query?query=' + encodeURIComponent(query))
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById("response").innerText = data.response;
-                })
-                .catch(error => console.error('Error:', error));
+            var apiKey = document.getElementById("apiKey").value;
+            fetch('/save-api-key', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ apiKey: apiKey })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                document.getElementById("message").innerText = data.message;
+                document.getElementById("message").style.display = "block";
+            })
+            .catch(error => console.error('Error:', error));
         });
     </script>
 </body>
