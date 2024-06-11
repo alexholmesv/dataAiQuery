@@ -3,35 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatGPT Query</title>
+    <title>DS Market AI Query</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <div class="container">
-        <header>
-            <img src="{{ url_for('static', filename='ds_logo.png') }}" alt="Logo" style="width: 100px;">
+        <div class="header">
+            <img src="{{ url_for('static', filename='ds_logo.png') }}" alt="Logo">
             <h1>DS Market</h1>
-            <h2>Consultador online</h2>
-        </header>
-        <h1>API key</h1>
-        <form id="apiKeyForm">
-            <label for="apiKey">Ingresa la API key de ChatGPT:</label><br>
-            <input type="text" id="apiKey" name="apiKey"><br><br>
-            <input type="submit" value="Save API Key">
-        </form>
-        <p id="message" style="display: none; color: green;"></p>
-        <form id="queryForm">
-            <label for="query">Ingresa tu consulta:</label><br>
-            <input type="text" id="query" name="query"><br><br>
-            <input type="submit" value="Submit">
-        </form>
-        <div id="response"></div>
+            <div class="api-key-box">
+                <form id="apiKeyForm">
+                    <input type="text" id="apiKey" name="apiKey" placeholder="API Key">
+                    <br>
+                    <input type="submit" value="Save">
+                </form>
+                <p id="message" style="display: none; color: green; font-size: 12px; margin-top: 5px;"></p>
+            </div>
+        </div>
+        <div class="query-box" id="queryBox">
+            <form id="queryForm" action="/" method="POST">
+                <label for="query">Enter your query:</label><br>
+                <input type="text" id="query" name="query" placeholder="Enter query here"><br><br>
+                <input type="submit" value="Submit">
+            </form>
+            <div id="response"></div>
+        </div>
     </div>
 
     <script>
-        document.getElementById("apiKeyForm").addEventListener("submit", function(event) {
-            event.preventDefault();
+       document.getElementById("apiKeyForm").addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent default form submission behavior
+            
+            // Get API key from the form
             var apiKey = document.getElementById("apiKey").value;
+
+            // Send API key to the backend
             fetch('/save-api-key', {
                 method: 'POST',
                 headers: {
@@ -42,8 +48,30 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data);
+                
+                // Display message
                 document.getElementById("message").innerText = data.message;
-                document.getElementById("message").style.display = "block";
+
+                // Show the query box
+                document.getElementById("queryBox").style.display = "block";
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById("queryForm").addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent default form submission behavior
+            
+            // Get query from the form
+            var query = document.getElementById("query").value;
+
+            // Send query to the backend
+            fetch('/query?query=' + encodeURIComponent(query))
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                
+                // Display response message
+                document.getElementById("response").innerText = data.response;
             })
             .catch(error => console.error('Error:', error));
         });

@@ -4,11 +4,14 @@ import openai
 
 app = Flask(__name__)
 
-# Load CSV data
+#Habilitar el auto reload
+app.config["TEMPLATES_AUTO_RELOAD"] = True
+
+# Cargar CSV de pryeba
 data = pd.read_csv('test.csv')
 
-# OpenAI API key
-openai.api_key = None
+# API Key OpenAI. NO SE PUEDE HARDCODEAR.
+openai.api_key = ""
 
 def generate_response(query):
     response = openai.Completion.create(
@@ -18,20 +21,25 @@ def generate_response(query):
     )
     return response.choices[0].text.strip()
 
+# Endpoints
+@app.route('/query', methods=['GET', "POST"])
+def index():
+    if request.method == 'POST':
+        query = request.form.get('query')
+        if query:
+
+            response = generate_response(query)
+            return render_template('index.html', response=response, query=query)
+        else:
+            return render_template('index.html', error='No query provided')
+
+
+
 # Homepage route
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# Query endpoint
-@app.route('/query', methods=['GET'])
-def query_data():
-    query = request.args.get('query')
-    if query:
-        response = generate_response(query)
-        return jsonify({'response': response})
-    else:
-        return jsonify({'error': 'No query provided'})
 
 @app.route('/save-api-key', methods=['POST'])
 def save_api_key():
